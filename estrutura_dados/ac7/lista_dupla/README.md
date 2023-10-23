@@ -17,16 +17,7 @@ Programa busca(ptlista, chave)
             Pare
     Retorna Null
 ```
-func (l *Lista) busca(chave int) *No {
-	no := l.cab
 
-    for no != nil {
-        if no.chave == chave { return no }
-        no = no.prox
-        if no == l.cab { break }
-    }
-    return nil
-}
 ### Exibição
 ```bash
 Programa exibe(ptlista)
