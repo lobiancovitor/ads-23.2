@@ -8,12 +8,17 @@ import java.util.Date;
 @Entity
 @Table(name = "musica")
 public class Musica {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
+
     private String titulo;
+
     private String letra;
+
     private Date dataLancamento;
+
     @ManyToOne
     @JoinColumn(name = "fk_categoria")
     private Categoria categoria;

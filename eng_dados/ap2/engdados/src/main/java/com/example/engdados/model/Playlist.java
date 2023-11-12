@@ -7,11 +7,15 @@ import java.util.Date;
 @Entity
 @Table(name = "playlist")
 public class Playlist {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
+
     private Date dataCriacao;
+
     private String titulo;
+
     @ManyToOne
     @JoinColumn(name = "fk_categoria")
     private Categoria categoria;

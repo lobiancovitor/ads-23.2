@@ -7,12 +7,17 @@ import java.util.ArrayList;
 @Entity
 @Table(name = "autor")
 public class Autor {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
+
     private String cpf;
+
     private String nomeOriginal;
+
     private String nomeArtistico;
+
     @ManyToMany(mappedBy = "autores")
     private ArrayList<Musica> musicas = new ArrayList<>();
 
