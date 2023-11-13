@@ -10,7 +10,7 @@ import java.util.List;
 public class Autor {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private String cpf;

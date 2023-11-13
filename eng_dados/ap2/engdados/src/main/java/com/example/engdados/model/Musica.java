@@ -1,16 +1,18 @@
 package com.example.engdados.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.sql.Date;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "musica")
 public class Musica {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private String titulo;
@@ -18,6 +20,8 @@ public class Musica {
     private String letra;
 
     private Date dataLancamento;
+
+    private double duracao;
 
     @ManyToOne
     @JoinColumn(name = "fk_categoria")
@@ -27,11 +31,9 @@ public class Musica {
     @JoinTable(
             name = "autor_musica",
             joinColumns = @JoinColumn(name = "fk_musica"),
-            inverseJoinColumns = @JoinColumn(name = "fk_autor")
-    )
-    private ArrayList<Autor> autores = new ArrayList<>();
-
-    private float duracao;
+            inverseJoinColumns = @JoinColumn(name = "fk_autor"))
+    @JsonIgnore
+    private List<Autor> autores = new ArrayList<>();
 
     public Integer getId() {
         return id;
@@ -65,6 +67,14 @@ public class Musica {
         this.dataLancamento = dataLancamento;
     }
 
+    public double getDuracao() {
+        return duracao;
+    }
+
+    public void setDuracao(double duracao) {
+        this.duracao = duracao;
+    }
+
     public Categoria getCategoria() {
         return categoria;
     }
@@ -72,19 +82,12 @@ public class Musica {
     public void setCategoria(Categoria categoria) {
         this.categoria = categoria;
     }
-    public float getDuracao() {
-        return duracao;
-    }
 
-    public void setDuracao(float duracao) {
-        this.duracao = duracao;
-    }
-
-    public ArrayList<Autor> getAutores() {
+    public List<Autor> getAutores() {
         return autores;
     }
 
-    public void setAutores(ArrayList<Autor> autores) {
+    public void setAutores(List<Autor> autores) {
         this.autores = autores;
     }
 }
