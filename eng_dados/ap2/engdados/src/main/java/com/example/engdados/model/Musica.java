@@ -31,9 +31,6 @@ public class Musica {
     )
     private ArrayList<Autor> autores = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "musicas")
-    private ArrayList<Playlist> playlists = new ArrayList<>();
-
     private float duracao;
 
     public Integer getId() {
@@ -89,13 +86,5 @@ public class Musica {
 
     public void setAutores(ArrayList<Autor> autores) {
         this.autores = autores;
-    }
-
-    public ArrayList<Playlist> getPlaylists() {
-        return playlists;
-    }
-
-    public void setPlaylists(ArrayList<Playlist> playlists) {
-        this.playlists = playlists;
     }
 }

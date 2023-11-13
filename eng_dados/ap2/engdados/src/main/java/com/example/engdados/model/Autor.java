@@ -3,6 +3,7 @@ package com.example.engdados.model;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "autor")
@@ -19,7 +20,7 @@ public class Autor {
     private String nomeArtistico;
 
     @ManyToMany(mappedBy = "autores")
-    private ArrayList<Musica> musicas = new ArrayList<>();
+    private List<Musica> musicas = new ArrayList<>();
 
     public Integer getId() {
         return id;
@@ -53,11 +54,11 @@ public class Autor {
         this.nomeArtistico = nomeArtistico;
     }
 
-    public ArrayList<Musica> getMusicas() {
+    public List<Musica> getMusicas() {
         return musicas;
     }
 
-    public void setMusicas(ArrayList<Musica> musicas) {
+    public void setMusicas(List<Musica> musicas) {
         this.musicas = musicas;
     }
 }
