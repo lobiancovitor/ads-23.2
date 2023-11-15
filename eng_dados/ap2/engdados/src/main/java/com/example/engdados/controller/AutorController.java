@@ -62,6 +62,7 @@ public class AutorController {
         updatedAutor.setCpf(autor.getCpf());
         updatedAutor.setNomeArtistico(autor.getNomeArtistico());
         updatedAutor.setNomeOriginal(autor.getNomeOriginal());
+        updatedAutor.setMusicas(autor.getMusicas());
 
         autorRepository.save(updatedAutor);
         return ResponseEntity.status(HttpStatus.OK).body(updatedAutor);

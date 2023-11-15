@@ -67,6 +67,7 @@ public class MusicaController {
         updatedMusica.setDataLancamento(musica.getDataLancamento());
         updatedMusica.setDuracao(musica.getDuracao());
         updatedMusica.setCategoria(musica.getCategoria());
+        updatedMusica.setAutores(musica.getAutores());
 
         musicaRepository.save(updatedMusica);
         return ResponseEntity.status(HttpStatus.OK).body(updatedMusica);

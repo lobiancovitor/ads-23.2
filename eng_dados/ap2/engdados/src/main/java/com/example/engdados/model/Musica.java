@@ -1,6 +1,7 @@
 package com.example.engdados.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.sql.Date;
@@ -32,7 +33,6 @@ public class Musica {
             name = "autor_musica",
             joinColumns = @JoinColumn(name = "fk_musica"),
             inverseJoinColumns = @JoinColumn(name = "fk_autor"))
-    @JsonIgnore
     private List<Autor> autores = new ArrayList<>();
 
     public Integer getId() {
