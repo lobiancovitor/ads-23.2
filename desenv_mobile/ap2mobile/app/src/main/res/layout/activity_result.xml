@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ResultActivity"
+    android:background="@drawable/app_bg"
+    android:gravity="center"
+    android:paddingHorizontal="30dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/resultTv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="Resultado de Vitor"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:layout_marginTop="30dp"
+        />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="142dp"
+        android:src="@drawable/pokeball"
+        android:layout_marginTop="20dp"/>
+
+    <TextView
+        android:id="@+id/scoreTv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Você acertou 3 de 6"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:paddingVertical="16dp"
+        />
+
+    <Button
+        android:id="@+id/btnRestart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Refazer"
+        android:textAllCaps="true"
+        android:backgroundTint="@color/white"
+        android:textColor="@color/colorPrimary"
+        android:paddingVertical="13dp"
+        android:textSize="18sp"
+        />
+
+</LinearLayout>
