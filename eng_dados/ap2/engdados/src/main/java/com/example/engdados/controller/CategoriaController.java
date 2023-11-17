@@ -1,5 +1,6 @@
 package com.example.engdados.controller;
 
+import com.example.engdados.exception.ResourceNotFoundException;
 import com.example.engdados.model.Categoria;
 import com.example.engdados.repository.CategoriaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,8 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/categorias")
@@ -18,50 +19,46 @@ public class CategoriaController {
     CategoriaRepository categoriaRepository;
 
     @GetMapping
-    public ResponseEntity getAllCategorias() {
-        List<Categoria> categorias = categoriaRepository.findAll();
+    public ResponseEntity<List<Categoria>> getAllCategorias() {
+        List<Categoria> categorias = new ArrayList<Categoria>();
+        categoriaRepository.findAll().forEach(categorias::add);
         if (categorias.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não existem categorias.");
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        return ResponseEntity.status(HttpStatus.OK).body(categorias);
+        return new ResponseEntity<>(categorias, HttpStatus.OK);
     }
 
     @GetMapping("{id}")
-    public ResponseEntity getCategoria(@PathVariable Integer id) {
-        Optional<Categoria> categoria = categoriaRepository.findById(id);
-        if (categoria.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Categoria não encontrada.");
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(categoria.get());
+    public ResponseEntity<Categoria> getCategoriaById(@PathVariable("id") Integer id) {
+        Categoria categoria = categoriaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada de id = " + id));
+
+        return new ResponseEntity<>(categoria, HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<Categoria> saveCategoria(@RequestBody Categoria categoria) {
-        var newCategoria = categoriaRepository.save(categoria);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newCategoria);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity deleteCategoria(@PathVariable Integer id){
-        Optional<Categoria> categoria = categoriaRepository.findById(id);
-        if(categoria.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Categoria não encontrada.");
-        }
-        categoriaRepository.delete(categoria.get());
-        return ResponseEntity.status(HttpStatus.OK).body("Categoria deletada.");
+    public ResponseEntity<Categoria> createCategoria(@RequestBody Categoria categoria) {
+        Categoria _categoria = categoriaRepository.save(
+                new Categoria(categoria.getNome())
+        );
+        return new ResponseEntity<>(_categoria, HttpStatus.CREATED);
     }
 
     @PutMapping("{id}")
-    public ResponseEntity updateCategoria(@PathVariable Integer id,
+    public ResponseEntity<Categoria> updateCategoria(@PathVariable("id") Integer id,
                                       @RequestBody  Categoria categoria) {
-        Optional<Categoria> optionalCategoria = categoriaRepository.findById(id);
-        if(optionalCategoria.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Categoria não encontrada.");
-        }
-        var updatedCategoria = optionalCategoria.get();
-        updatedCategoria.setNome(categoria.getNome());
+        Categoria _categoria = categoriaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada de id = " + id));
 
-        categoriaRepository.save(updatedCategoria);
-        return ResponseEntity.status(HttpStatus.OK).body(updatedCategoria);
+        _categoria.setNome(categoria.getNome());
+
+        return new ResponseEntity<>(categoriaRepository.save(_categoria), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<HttpStatus> deleteCategoria(@PathVariable("id") Integer id){
+        categoriaRepository.deleteById(id);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

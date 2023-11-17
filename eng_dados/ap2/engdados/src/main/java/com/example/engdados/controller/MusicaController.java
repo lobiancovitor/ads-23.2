@@ -1,76 +1,98 @@
 package com.example.engdados.controller;
 
-import com.example.engdados.model.Autor;
-import com.example.engdados.model.Categoria;
+import com.example.engdados.exception.ResourceNotFoundException;
 import com.example.engdados.model.Musica;
+import com.example.engdados.repository.CategoriaRepository;
 import com.example.engdados.repository.MusicaRepository;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/musicas")
 public class MusicaController {
 
     @Autowired
     MusicaRepository musicaRepository;
 
-    @GetMapping
-    public ResponseEntity getAllMusicas() {
-        List<Musica> musicas = musicaRepository.findAll();
+    @Autowired
+    CategoriaRepository categoriaRepository;
+
+    @GetMapping("/musicas")
+    public ResponseEntity<List<Musica>> getAllMusicas() {
+        List<Musica> musicas = new ArrayList<Musica>();
+        musicaRepository.findAll().forEach(musicas::add);
+
         if (musicas.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não existem músicas.");
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        return ResponseEntity.status(HttpStatus.OK).body(musicas);
+
+        return new ResponseEntity<>(musicas, HttpStatus.OK);
     }
 
-    @GetMapping("{id}")
-    public ResponseEntity getMusica(@PathVariable Integer id) {
-        Optional<Musica> musica = musicaRepository.findById(id);
-        if (musica.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Música não encontrada.");
+    @GetMapping("/musicas/{id}")
+    public ResponseEntity<Musica> getMusicaById(@PathVariable("id") Integer id) {
+        Musica musica = musicaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Música não encontrada de id = " + id));
+
+        return new ResponseEntity<>(musica, HttpStatus.OK);
+    }
+
+    @GetMapping("/categorias/{categoriaId}/musicas")
+    public ResponseEntity<List<Musica>> getAllMusicasByCategoriaId(
+            @PathVariable(value = "fk_categoria") Integer categoriaId) {
+        if (!categoriaRepository.existsById(categoriaId)) {
+            throw new ResourceNotFoundException("Categoria não encontrada de id = " + categoriaId);
         }
-        return ResponseEntity.status(HttpStatus.OK).body(musica.get());
+        List<Musica> musicas = musicaRepository.findByCategoriaId(categoriaId);
+        return new ResponseEntity<>(musicas, HttpStatus.OK);
     }
 
-    @PostMapping
-    public ResponseEntity<Musica> saveMusica(@RequestBody Musica musica) {
-        var newMusica = musicaRepository.save(musica);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newMusica);
+    @GetMapping("/categorias/musicas/{id}")
+    public ResponseEntity<Musica> getMusicaByCategoriaId(@PathVariable("id") Integer id) {
+        Musica musica = musicaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Música não encontrada de id = " + id));
+
+        return new ResponseEntity<>(musica, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity deleteMusica(@PathVariable Integer id){
-        Optional<Musica> musica = musicaRepository.findById(id);
-        if(musica.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Música não encontrada.");
-        }
-        musicaRepository.delete(musica.get());
-        return ResponseEntity.status(HttpStatus.OK).body("Música deletada.");
+    @PostMapping("categorias/{categoriaId}/musicas")
+    public ResponseEntity<Musica> createMusica(@PathVariable("id") Integer categoriaId,
+                                               @RequestBody Musica musica) {
+        Musica _musica = categoriaRepository.findById(categoriaId).map(categoria -> {
+            musica.setCategoria(categoria);
+            return musicaRepository.save(musica);
+        }).orElseThrow(() ->
+                new ResourceNotFoundException("Categoria não encontrada de id = " + categoriaId)
+        );
+        return new ResponseEntity<>(_musica, HttpStatus.CREATED);
     }
 
-    @PutMapping("{id}")
-    public ResponseEntity updateMusica(@PathVariable Integer id,
-                                      @RequestBody Musica musica) {
-        Optional<Musica> optionalMusica = musicaRepository.findById(id);
-        if(optionalMusica.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Música não encontrada.");
-        }
-        var updatedMusica = optionalMusica.get();
-        updatedMusica.setTitulo(musica.getTitulo());
-        updatedMusica.setLetra(musica.getLetra());
-        updatedMusica.setDataLancamento(musica.getDataLancamento());
-        updatedMusica.setDuracao(musica.getDuracao());
-        updatedMusica.setCategoria(musica.getCategoria());
-        updatedMusica.setAutores(musica.getAutores());
+    @PutMapping("/musicas/{id}")
+    public ResponseEntity<Musica> updateMusica(@PathVariable("id") Integer id,
+                                       @RequestBody Musica musica) {
+        Musica _musica  = musicaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Música não encontrada de id = " + id
+                ));
 
-        musicaRepository.save(updatedMusica);
-        return ResponseEntity.status(HttpStatus.OK).body(updatedMusica);
+        _musica.setTitulo(musica.getTitulo());
+        _musica.setLetra(musica.getLetra());
+        _musica.setDataLancamento(musica.getDataLancamento());
+        _musica.setDuracao(musica.getDuracao());
+        _musica.setCategoria(musica.getCategoria());
+        _musica.setAutores(musica.getAutores());
+
+        return new ResponseEntity<>(musicaRepository.save(_musica), HttpStatus.OK);
     }
 
+    @DeleteMapping("/musicas/{id}")
+    public ResponseEntity<HttpStatus> deleteMusica(@PathVariable("id") Integer id){
+        musicaRepository.deleteById(id);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }

@@ -1,70 +1,119 @@
 package com.example.engdados.controller;
 
+import com.example.engdados.exception.ResourceNotFoundException;
 import com.example.engdados.model.Autor;
+import com.example.engdados.model.Musica;
 import com.example.engdados.repository.AutorRepository;
+import com.example.engdados.repository.MusicaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/autores")
+@RequestMapping
 public class AutorController {
 
     @Autowired
     AutorRepository autorRepository;
 
-    @GetMapping
-    public ResponseEntity getAllAutores() {
-        List<Autor> autores = autorRepository.findAll();
+    @Autowired
+    MusicaRepository musicaRepository;
+
+    @GetMapping("/autores")
+    public ResponseEntity<List<Autor>> getAllAutores() {
+        List<Autor> autores = new ArrayList<Autor>();
+        autorRepository.findAll().forEach(autores::add);
+
         if (autores.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não existem autores.");
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        return ResponseEntity.status(HttpStatus.OK).body(autores);
+        return new ResponseEntity<>(autores, HttpStatus.OK);
     }
 
-    @GetMapping("{id}")
-    public ResponseEntity getAutor(@PathVariable Integer id) {
-        Optional<Autor> autor = autorRepository.findById(id);
-        if (autor.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Autor não encontrado.");
+    @GetMapping("/musicas/{musicaId}/autores")
+    public ResponseEntity<List<Autor>> getAllAutoresByMusicaId(@PathVariable("musicaId") Integer musicaId) {
+        if (!musicaRepository.existsById(musicaId)) {
+            throw new ResourceNotFoundException("Música não encontrada de id = " + musicaId);
         }
-        return ResponseEntity.status(HttpStatus.OK).body(autor.get());
+        List<Autor> autores = autorRepository.findAutoresByMusicasId(musicaId);
+        return new ResponseEntity<>(autores, HttpStatus.OK);
     }
 
-    @PostMapping
-    public ResponseEntity<Autor> saveAutor(@RequestBody Autor autor) {
-        var newAutor = autorRepository.save(autor);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newAutor);
+    @GetMapping("/autores/{id}")
+    public ResponseEntity<Autor> getAutorById(@PathVariable("id") Integer id) {
+        Autor autor = autorRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Autor não encontrado de id = " + id));
+
+        return new ResponseEntity<>(autor, HttpStatus.OK);
+    }
+    @GetMapping("/autores/{autorId}/musicas")
+    public ResponseEntity<List<Musica>> getAllMusicasByAutorId(@PathVariable("autorId") Integer autorId) {
+        if (!autorRepository.existsById(autorId)) {
+            throw new ResourceNotFoundException("Autor não encontrado de id = " + autorId);
+        }
+
+        List<Musica> musicas = musicaRepository.findMusicasByAutoresId(autorId);
+        return new ResponseEntity<>(musicas, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity deleteAutor(@PathVariable Integer id){
-        Optional<Autor> autor = autorRepository.findById(id);
-        if(autor.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Autor não encontrado.");
-        }
-        autorRepository.delete(autor.get());
-        return ResponseEntity.status(HttpStatus.OK).body("Autor deletado.");
+    @PostMapping("/musicas/{musicaId}/autores")
+    public ResponseEntity<Autor> addAutor(@PathVariable("musicaId") Integer musicaId,
+                                          @RequestBody Autor autorRequest) {
+        Autor autor = musicaRepository.findById(musicaId).map(musica -> {
+            Integer autorId = autorRequest.getId();
+
+            if (autorId != null) {
+                Autor _autor = autorRepository.findById(autorId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Autor não encontrado de id = " + autorId));
+                musica.addAutor(_autor);
+                musicaRepository.save(musica);
+                return _autor;
+            }
+
+            musica.addAutor(autorRequest);
+            return autorRepository.save(autorRequest);
+
+        }).orElseThrow(() -> new ResourceNotFoundException("Música não encontrada de id = " + musicaId));
+
+        return new ResponseEntity<>(autor, HttpStatus.CREATED);
     }
 
-    @PutMapping("{id}")
-    public ResponseEntity updateAutor(@PathVariable Integer id,
-                                      @RequestBody  Autor autor) {
-        Optional<Autor> optionalAutor = autorRepository.findById(id);
-        if(optionalAutor.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Autor não encontrado.");
-        }
-        var updatedAutor = optionalAutor.get();
-        updatedAutor.setCpf(autor.getCpf());
-        updatedAutor.setNomeArtistico(autor.getNomeArtistico());
-        updatedAutor.setNomeOriginal(autor.getNomeOriginal());
-        updatedAutor.setMusicas(autor.getMusicas());
+    @PostMapping("/autores")
+    public ResponseEntity<Autor> createAutor(@RequestBody Autor autor) {
+        Autor _autor = autorRepository.save(
+                new Autor(
+                        autor.getCpf(),
+                        autor.getNomeOriginal(),
+                        autor.getNomeArtistico(),
+                        autor.getMusicas()
+                )
+        );
 
-        autorRepository.save(updatedAutor);
-        return ResponseEntity.status(HttpStatus.OK).body(updatedAutor);
+        return new ResponseEntity<>(_autor, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/autores/{id}")
+    public ResponseEntity<Autor> updateAutor(@PathVariable Integer id,
+                                      @RequestBody  Autor autorRequest) {
+        Autor autor = autorRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Autor não encontrado de id = " + id));
+
+        autor.setCpf(autorRequest.getCpf());
+        autor.setNomeOriginal(autorRequest.getNomeOriginal());
+        autor.setNomeArtistico(autorRequest.getNomeArtistico());
+        autor.setMusicas(autorRequest.getMusicas());
+
+        return new ResponseEntity<>(autorRepository.save(autor), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/autores/{id}")
+    public ResponseEntity<HttpStatus> deleteAutor(@PathVariable Integer id){
+        autorRepository.deleteById(id);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
