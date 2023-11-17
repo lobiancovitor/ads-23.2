@@ -27,4 +27,10 @@ public class Categoria {
     public void setNome(String nome) {
         this.nome = nome;
     }
+
+    public Categoria(String nome) {
+        this.nome = nome;
+    }
+
+    public Categoria() { }
 }

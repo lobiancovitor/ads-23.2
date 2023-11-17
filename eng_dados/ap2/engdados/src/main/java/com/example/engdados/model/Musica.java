@@ -1,7 +1,5 @@
 package com.example.engdados.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.sql.Date;
@@ -34,6 +32,17 @@ public class Musica {
             joinColumns = @JoinColumn(name = "fk_musica"),
             inverseJoinColumns = @JoinColumn(name = "fk_autor"))
     private List<Autor> autores = new ArrayList<>();
+
+    public Musica(String titulo, String letra, Date dataLancamento, double duracao, Categoria categoria, List<Autor> autores) {
+        this.titulo = titulo;
+        this.letra = letra;
+        this.dataLancamento = dataLancamento;
+        this.duracao = duracao;
+        this.categoria = categoria;
+        this.autores = autores;
+    }
+
+    public Musica() { }
 
     public Integer getId() {
         return id;
@@ -89,5 +98,18 @@ public class Musica {
 
     public void setAutores(List<Autor> autores) {
         this.autores = autores;
+    }
+
+    public void addAutor(Autor autor) {
+        this.autores.add(autor);
+        autor.getMusicas().add(this);
+    }
+
+    public void removeAutor(Integer autorId) {
+        Autor autor = this.autores.stream().filter(a -> a.getId() == autorId).findFirst().orElse(null);
+        if (autor != null ){
+            this.autores.remove(autor);
+            autor.getMusicas().remove(this);
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.example.engdados.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -20,7 +21,17 @@ public class Autor {
     private String nomeArtistico;
 
     @ManyToMany(mappedBy = "autores")
+    @JsonIgnore
     private List<Musica> musicas = new ArrayList<>();
+
+    public Autor(String cpf, String nomeOriginal, String nomeArtistico, List<Musica> musicas) {
+        this.cpf = cpf;
+        this.nomeOriginal = nomeOriginal;
+        this.nomeArtistico = nomeArtistico;
+        this.musicas = musicas;
+    }
+
+    public Autor() { }
 
     public Integer getId() {
         return id;
