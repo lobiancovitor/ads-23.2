@@ -1,6 +1,6 @@
 package com.example.engdados.controller;
 
-import com.example.engdados.exception.ResourceNotFoundException;
+import com.example.engdados.exception.RecordNotFoundException;
 import com.example.engdados.model.Autor;
 import com.example.engdados.model.Musica;
 import com.example.engdados.repository.AutorRepository;
@@ -37,7 +37,7 @@ public class AutorController {
     @GetMapping("/autores/{musicaId}/musicas")
     public ResponseEntity<List<Autor>> getAllAutoresByMusicaId(@PathVariable("musicaId") Integer musicaId) {
         if (!musicaRepository.existsById(musicaId)) {
-            throw new ResourceNotFoundException("Música não encontrada de id = " + musicaId);
+            throw new RecordNotFoundException(musicaId);
         }
         List<Autor> autores = autorRepository.findAutoresByMusicasId(musicaId);
 
@@ -51,7 +51,7 @@ public class AutorController {
     @GetMapping("/autores/{id}")
     public ResponseEntity<Autor> getAutorById(@PathVariable("id") Integer id) {
         Autor autor = autorRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Autor não encontrado de id = " + id));
+                .orElseThrow(() -> new RecordNotFoundException(id));
 
         return new ResponseEntity<>(autor, HttpStatus.OK);
     }
@@ -60,10 +60,10 @@ public class AutorController {
     public ResponseEntity<Autor> addAutor(@PathVariable("musicaId") Integer musicaId,
                                           @PathVariable("autorId") Integer autorId) {
         Autor autor = autorRepository.findById(autorId)
-                .orElseThrow(() -> new ResourceNotFoundException("Autor não encontrado de id = " + autorId));
+                .orElseThrow(() -> new RecordNotFoundException(autorId));
 
         Musica musica = musicaRepository.findById(musicaId)
-                .orElseThrow(() -> new ResourceNotFoundException("Música não encontrada de id = " + musicaId));
+                .orElseThrow(() -> new RecordNotFoundException(musicaId));
 
         musica.addAutor(autor);
 
@@ -88,7 +88,7 @@ public class AutorController {
     public ResponseEntity<Autor> updateAutor(@PathVariable Integer id,
                                       @RequestBody  Autor autorRequest) {
         Autor autor = autorRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Autor não encontrado de id = " + id));
+                .orElseThrow(() -> new RecordNotFoundException(id));
 
         autor.setCpf(autorRequest.getCpf());
         autor.setNomeOriginal(autorRequest.getNomeOriginal());

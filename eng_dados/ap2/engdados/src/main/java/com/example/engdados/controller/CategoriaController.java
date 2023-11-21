@@ -1,6 +1,6 @@
 package com.example.engdados.controller;
 
-import com.example.engdados.exception.ResourceNotFoundException;
+import com.example.engdados.exception.RecordNotFoundException;
 import com.example.engdados.model.Categoria;
 import com.example.engdados.repository.CategoriaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,7 @@ public class CategoriaController {
     @GetMapping("{id}")
     public ResponseEntity<Categoria> getCategoriaById(@PathVariable("id") Integer id) {
         Categoria categoria = categoriaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada de id = " + id));
+                .orElseThrow(() -> new RecordNotFoundException(id));
 
         return new ResponseEntity<>(categoria, HttpStatus.OK);
     }
@@ -48,7 +48,7 @@ public class CategoriaController {
     public ResponseEntity<Categoria> updateCategoria(@PathVariable("id") Integer id,
                                       @RequestBody  Categoria categoria) {
         Categoria _categoria = categoriaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada de id = " + id));
+                .orElseThrow(() -> new RecordNotFoundException(id));
 
         _categoria.setNome(categoria.getNome());
 
