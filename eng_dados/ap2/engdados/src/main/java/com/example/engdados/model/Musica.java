@@ -22,7 +22,7 @@ public class Musica {
 
     private double duracao;
 
-    @ManyToOne(cascade = CascadeType.REMOVE, optional = true)
+    @ManyToOne
     @JoinColumn(name = "fk_categoria", nullable = true)
     private Categoria categoria;
 
