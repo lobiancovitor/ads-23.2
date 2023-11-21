@@ -17,11 +17,14 @@ import java.util.List;
 @RequestMapping
 public class AutorController {
 
-    @Autowired
-    AutorRepository autorRepository;
+    private AutorRepository autorRepository;
+    private MusicaRepository musicaRepository;
 
-    @Autowired
-    MusicaRepository musicaRepository;
+    public AutorController(AutorRepository autorRepository,
+                           MusicaRepository musicaRepository) {
+        this.autorRepository = autorRepository;
+        this.musicaRepository = musicaRepository;
+    }
 
     @GetMapping("/autores")
     public ResponseEntity<List<Autor>> getAllAutores() {

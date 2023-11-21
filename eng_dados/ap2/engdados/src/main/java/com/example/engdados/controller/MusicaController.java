@@ -16,14 +16,17 @@ import java.util.List;
 @RestController
 public class MusicaController {
 
-    @Autowired
-    MusicaRepository musicaRepository;
+    private MusicaRepository musicaRepository;
+    private CategoriaRepository categoriaRepository;
+    private AutorRepository autorRepository;
 
-    @Autowired
-    CategoriaRepository categoriaRepository;
-
-    @Autowired
-    AutorRepository autorRepository;
+    public MusicaController(MusicaRepository musicaRepository,
+                            CategoriaRepository categoriaRepository,
+                            AutorRepository autorRepository) {
+        this.musicaRepository = musicaRepository;
+        this.categoriaRepository = categoriaRepository;
+        this.autorRepository = autorRepository;
+    }
 
     @GetMapping("/musicas")
     public ResponseEntity<List<Musica>> getAllMusicas() {

@@ -15,8 +15,11 @@ import java.util.List;
 @RequestMapping("/categorias")
 public class CategoriaController {
 
-    @Autowired
-    CategoriaRepository categoriaRepository;
+    private CategoriaRepository categoriaRepository;
+
+    public CategoriaController(CategoriaRepository categoriaRepository) {
+        this.categoriaRepository = categoriaRepository;
+    }
 
     @GetMapping
     public ResponseEntity<List<Categoria>> getAllCategorias() {
