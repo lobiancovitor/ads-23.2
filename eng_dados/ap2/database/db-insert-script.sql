@@ -1,23 +1,83 @@
--- Inserting data into `sound--`.`autor` table
+-- Inserting data into the 'autor' table
 INSERT INTO `sound--`.`autor` (`cpf`, `nome_original`, `nome_artistico`) VALUES
-('12345678901', 'John Doe', 'DJ J.D.'),
-('98765432101', 'Jane Smith', 'J-Smooth');
+('11111111111', 'Author 1 Original', 'Author 1 Artistic'),
+('22222222222', 'Author 2 Original', 'Author 2 Artistic'),
+('33333333333', 'Author 3 Original', 'Author 3 Artistic'),
+('44444444444', 'Author 4 Original', 'Author 4 Artistic'),
+('55555555555', 'Author 5 Original', 'Author 5 Artistic'),
+('66666666666', 'Author 6 Original', 'Author 6 Artistic'),
+('77777777777', 'Author 7 Original', 'Author 7 Artistic'),
+('88888888888', 'Author 8 Original', 'Author 8 Artistic');
 
--- Inserting data into `sound--`.`categoria` table
+-- Inserting data into the 'categoria' table
 INSERT INTO `sound--`.`categoria` (`nome`) VALUES
-('Pop'),
 ('Rock'),
+('Pop'),
+('Hip Hop'),
 ('Electronic');
 
--- Inserting data into `sound--`.`musica` table
+-- Inserting data into the 'musica' table
 INSERT INTO `sound--`.`musica` (`titulo`, `letra`, `data_lancamento`, `fk_categoria`, `duracao`) VALUES
-('Catchy Tune', 'Lorem ipsum dolor sit amet', '2023-01-15', 1, 3.5),
-('Guitar Riff', 'Sed ut perspiciatis unde omnis iste natus', '2023-02-20', 2, 4.2),
-('Electronic Beats', 'At vero eos et accusamus et iusto odio dignissimos', '2023-03-10', 3, 5.1);
+('Song 1', 'Lyrics 1', '2023-01-01', 1, 3.5),
+('Song 2', 'Lyrics 2', '2023-02-01', 2, 4.2),
+('Song 3', 'Lyrics 3', '2023-03-01', 3, 2.8),
+('Song 4', 'Lyrics 4', '2023-04-01', 4, 5.1),
+('Song 5', 'Lyrics 5', '2023-05-01', 1, 3.9),
+('Song 6', 'Lyrics 6', '2023-06-01', 2, 4.8),
+('Song 7', 'Lyrics 7', '2023-07-01', 3, 2.3),
+('Song 8', 'Lyrics 8', '2023-08-01', 4, 4.5),
+('Song 9', 'Lyrics 9', '2023-09-01', 1, 3.0),
+('Song 10', 'Lyrics 10', '2023-10-01', 2, 3.7),
+('Song 11', 'Lyrics 11', '2023-11-01', 3, 2.5),
+('Song 12', 'Lyrics 12', '2023-12-01', 4, 5.0),
+('Song 13', 'Lyrics 13', '2024-01-01', 1, 3.2),
+('Song 14', 'Lyrics 14', '2024-02-01', 2, 4.0),
+('Song 15', 'Lyrics 15', '2024-03-01', 3, 2.0),
+('Song 16', 'Lyrics 16', '2024-04-01', 4, 4.3),
+('Song 17', 'Lyrics 17', '2024-05-01', 1, 3.6),
+('Song 18', 'Lyrics 18', '2024-06-01', 2, 4.1),
+('Song 19', 'Lyrics 19', '2024-07-01', 3, 2.7),
+('Song 20', 'Lyrics 20', '2024-08-01', 4, 4.7);
 
--- Inserting data into `sound--`.`autor_musica` table
+-- Inserting data into the 'autor_musica' table
 INSERT INTO `sound--`.`autor_musica` (`fk_autor`, `fk_musica`) VALUES
 (1, 1),
 (2, 1),
-(1, 2),
-(2, 3);
+(3, 2),
+(4, 2),
+(5, 3),
+(6, 3),
+(7, 4),
+(8, 4),
+(1, 5),
+(2, 5),
+(3, 6),
+(4, 6),
+(5, 7),
+(6, 7),
+(7, 8),
+(8, 8),
+(1, 9),
+(2, 9),
+(3, 10),
+(4, 10),
+(5, 11),
+(6, 11),
+(7, 12),
+(8, 12),
+(1, 13),
+(2, 13),
+(3, 14),
+(4, 14),
+(5, 15),
+(6, 15),
+(7, 16),
+(8, 16),
+(1, 17),
+(2, 17),
+(3, 18),
+(4, 18),
+(5, 19),
+(6, 19),
+(7, 20),
+(8, 20);
