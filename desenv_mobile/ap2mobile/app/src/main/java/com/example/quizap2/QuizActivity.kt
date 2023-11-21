@@ -24,7 +24,6 @@ class QuizActivity : AppCompatActivity() {
     private var tvQuestion: TextView? = null
     private var ivImage: ImageView? = null
     private var tvProgress: TextView? = null
-    private var btnSubmit: Button? = null
     private var tvAlternatives: ArrayList<TextView>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,7 +35,6 @@ class QuizActivity : AppCompatActivity() {
         tvQuestion = findViewById(R.id.tvQuestion)
         ivImage = findViewById(R.id.ivImage)
         tvProgress = findViewById(R.id.tvProgress)
-        btnSubmit = findViewById(R.id.btnSubmit)
         tvAlternatives = arrayListOf(
             findViewById(R.id.optionOne),
             findViewById(R.id.optionTwo),
@@ -46,28 +44,30 @@ class QuizActivity : AppCompatActivity() {
 
         updateQuestion()
 
-        btnSubmit?.setOnClickListener {
-            if (!isAnswerChecked) {
-                val anyAnswerIsChecked = selectedAlternativeIndex != -1
-                if (!anyAnswerIsChecked) {
-                    Toast.makeText(this, "Please, select an alternative", Toast.LENGTH_SHORT).show()
-                } else {
-                    val currentQuestion = questionsList[currentQuestionIndex]
-                    if (
-                        selectedAlternativeIndex == currentQuestion.correctAnswerIndex
-                    ) {
-                        answerView(tvAlternatives!![selectedAlternativeIndex], R.drawable.correct_option_border_bg)
-                        totalScore++
-                    } else {
-                        answerView(tvAlternatives!![selectedAlternativeIndex], R.drawable.wrong_option_border_bg)
-                        answerView(tvAlternatives!![currentQuestion.correctAnswerIndex], R.drawable.correct_option_border_bg)
+        tvAlternatives?.let {
+            for (optionIndex in it.indices) {
+                it[optionIndex].let {
+                    it.setOnClickListener{
+                        if (!isAnswerChecked) {
+                            selectedAlternativeView(it as TextView, optionIndex)
+                            processAnswer()
+                        }
                     }
-
-                    isAnswerChecked = true
-                    btnSubmit?.text = if (currentQuestionIndex == questionsList.size - 1) "FINISH" else "GO TO NEXT QUESTION"
-                    selectedAlternativeIndex = -1
                 }
-            } else {
+            }
+        }
+    }
+
+    private fun processAnswer() {
+        if (!isAnswerChecked) {
+            val anyAnswerIsChecked = selectedAlternativeIndex != -1
+            if (anyAnswerIsChecked) {
+                val currentQuestion = questionsList[currentQuestionIndex]
+                if (selectedAlternativeIndex == currentQuestion.correctAnswerIndex) {
+                    totalScore++
+                }
+                isAnswerChecked = true
+
                 if (currentQuestionIndex < questionsList.size - 1) {
                     currentQuestionIndex++
                     updateQuestion()
@@ -83,70 +83,19 @@ class QuizActivity : AppCompatActivity() {
                 isAnswerChecked = false
             }
         }
-
-        tvAlternatives?.let {
-            for (optionIndex in it.indices) {
-                it[optionIndex].let {
-                    it.setOnClickListener{
-                        if (!isAnswerChecked) {
-                            selectedAlternativeView(it as TextView, optionIndex)
-                        }
-                    }
-                }
-            }
-        }
     }
 
     private fun updateQuestion() {
-        defaultAlternativesView()
-
-        // Render Question Text
         tvQuestion?.text = questionsList[currentQuestionIndex].questionText
-        // Render Question Image
         ivImage?.setImageResource(questionsList[currentQuestionIndex].image)
-        // progressBar
-        // Text of progress bar
         tvProgress?.text = "${currentQuestionIndex + 1}/${questionsList.size}"
 
         for (alternativeIndex in questionsList[currentQuestionIndex].alternatives.indices) {
             tvAlternatives!![alternativeIndex].text = questionsList[currentQuestionIndex].alternatives[alternativeIndex]
         }
-
-        btnSubmit?.text = if (currentQuestionIndex == questionsList.size - 1) "FINISH" else "SUBMIT"
-    }
-
-    private fun defaultAlternativesView() {
-        for (alternativeTv in tvAlternatives!!) {
-            alternativeTv.typeface = Typeface.DEFAULT
-            alternativeTv.setTextColor(Color.parseColor("#7A8089"))
-            alternativeTv.background = ContextCompat.getDrawable(
-                this@QuizActivity,
-                R.drawable.default_option_border_bg
-            )
-        }
     }
 
     private fun selectedAlternativeView(option: TextView, index: Int) {
-        defaultAlternativesView()
         selectedAlternativeIndex = index
-
-        option.setTextColor(
-            Color.parseColor("#363A43")
-        )
-        option.setTypeface(option.typeface, Typeface.BOLD)
-        option.background = ContextCompat.getDrawable(
-            this@QuizActivity,
-            R.drawable.selected_option_border_bg
-        )
-    }
-
-    private fun answerView(view: TextView, drawableId: Int) {
-        view.background = ContextCompat.getDrawable(
-            this@QuizActivity,
-            drawableId
-        )
-        tvAlternatives!![selectedAlternativeIndex].setTextColor(
-            Color.parseColor("#FFFFFF")
-        )
     }
 }
