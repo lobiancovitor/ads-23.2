@@ -76,15 +76,5 @@
             style="@style/toggleButton"
             tools:text="Mankey"
             />
-
-        <Button
-            android:id="@+id/btnSubmit"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Continuar"
-            android:layout_marginTop="15dp"
-            android:textSize="18dp"
-            android:paddingVertical="15dp"
-            />
     </LinearLayout>
 </ScrollView>
