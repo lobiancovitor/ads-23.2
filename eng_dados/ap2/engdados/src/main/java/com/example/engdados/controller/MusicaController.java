@@ -1,7 +1,9 @@
 package com.example.engdados.controller;
 
 import com.example.engdados.exception.ResourceNotFoundException;
+import com.example.engdados.model.Autor;
 import com.example.engdados.model.Musica;
+import com.example.engdados.repository.AutorRepository;
 import com.example.engdados.repository.CategoriaRepository;
 import com.example.engdados.repository.MusicaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,9 @@ public class MusicaController {
 
     @Autowired
     CategoriaRepository categoriaRepository;
+
+    @Autowired
+    AutorRepository autorRepository;
 
     @GetMapping("/musicas")
     public ResponseEntity<List<Musica>> getAllMusicas() {
@@ -41,9 +46,9 @@ public class MusicaController {
         return new ResponseEntity<>(musica, HttpStatus.OK);
     }
 
-    @GetMapping("/categorias/{categoriaId}/musicas")
+    @GetMapping("/musicas/{categoriaId}/categorias")
     public ResponseEntity<List<Musica>> getAllMusicasByCategoriaId(
-            @PathVariable(value = "fk_categoria") Integer categoriaId) {
+            @PathVariable(value = "categoriaId") Integer categoriaId) {
         if (!categoriaRepository.existsById(categoriaId)) {
             throw new ResourceNotFoundException("Categoria não encontrada de id = " + categoriaId);
         }
@@ -51,16 +56,35 @@ public class MusicaController {
         return new ResponseEntity<>(musicas, HttpStatus.OK);
     }
 
-    @GetMapping("/categorias/musicas/{id}")
-    public ResponseEntity<Musica> getMusicaByCategoriaId(@PathVariable("id") Integer id) {
-        Musica musica = musicaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Música não encontrada de id = " + id));
+    @GetMapping("/musicas/{autorId}/autores")
+    public ResponseEntity<List<Musica>> getAllMusicasByAutorId(@PathVariable("autorId") Integer autorId) {
+        if (!autorRepository.existsById(autorId)) {
+            throw new ResourceNotFoundException("Autor não encontrado de id = " + autorId);
+        }
 
-        return new ResponseEntity<>(musica, HttpStatus.OK);
+        List<Musica> musicas = musicaRepository.findMusicasByAutoresId(autorId);
+        return new ResponseEntity<>(musicas, HttpStatus.OK);
     }
 
-    @PostMapping("categorias/{categoriaId}/musicas")
-    public ResponseEntity<Musica> createMusica(@PathVariable("id") Integer categoriaId,
+    @PostMapping("/musicas")
+    public ResponseEntity<Musica> createMusica(@RequestBody Musica musica) {
+        Musica _musica = musicaRepository.save(
+                new Musica(
+                        musica.getTitulo(),
+                        musica.getLetra(),
+                        musica.getDataLancamento(),
+                        musica.getDuracao(),
+                        musica.getCategoria(),
+                        musica.getAutores()
+
+                )
+        );
+
+        return new ResponseEntity<>(_musica, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/musicas/{categoriaId}/categorias")
+    public ResponseEntity<Musica> createMusicaByCategoria(@PathVariable("categoriaId") Integer categoriaId,
                                                @RequestBody Musica musica) {
         Musica _musica = categoriaRepository.findById(categoriaId).map(categoria -> {
             musica.setCategoria(categoria);
