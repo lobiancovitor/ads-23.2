@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping
+@RequestMapping("/autores")
 public class AutorController {
 
     private final AutorRepository autorRepository;
@@ -25,7 +25,7 @@ public class AutorController {
         this.musicaRepository = musicaRepository;
     }
 
-    @GetMapping("/autores")
+    @GetMapping
     public ResponseEntity<List<Autor>> getAllAutores() {
         List<Autor> autores = new ArrayList<>();
         autorRepository.findAll().forEach(autores::add);
@@ -36,7 +36,15 @@ public class AutorController {
         return new ResponseEntity<>(autores, HttpStatus.OK);
     }
 
-    @GetMapping("/autores/{musicaId}/musicas")
+    @GetMapping("{id}")
+    public ResponseEntity<Autor> getAutorById(@PathVariable("id") Integer id) {
+        Autor autor = autorRepository.findById(id)
+                .orElseThrow(() -> new RecordNotFoundException(id));
+
+        return new ResponseEntity<>(autor, HttpStatus.OK);
+    }
+
+    @GetMapping("{musicaId}/musicas")
     public ResponseEntity<List<Autor>> getAllAutoresByMusicaId(@PathVariable("musicaId") Integer musicaId) {
         if (!musicaRepository.existsById(musicaId)) {
             throw new RecordNotFoundException(musicaId);
@@ -50,29 +58,7 @@ public class AutorController {
         return new ResponseEntity<>(autores, HttpStatus.OK);
     }
 
-    @GetMapping("/autores/{id}")
-    public ResponseEntity<Autor> getAutorById(@PathVariable("id") Integer id) {
-        Autor autor = autorRepository.findById(id)
-                .orElseThrow(() -> new RecordNotFoundException(id));
-
-        return new ResponseEntity<>(autor, HttpStatus.OK);
-    }
-
-    @PutMapping("/autores/{autorId}/{musicaId}")
-    public ResponseEntity<Autor> addAutor(@PathVariable("musicaId") Integer musicaId,
-                                          @PathVariable("autorId") Integer autorId) {
-        Autor autor = autorRepository.findById(autorId)
-                .orElseThrow(() -> new RecordNotFoundException(autorId));
-
-        Musica musica = musicaRepository.findById(musicaId)
-                .orElseThrow(() -> new RecordNotFoundException(musicaId));
-
-        musica.addAutor(autor);
-
-        return new ResponseEntity<>(autorRepository.save(autor), HttpStatus.OK);
-    }
-
-    @PostMapping("/autores")
+    @PostMapping
     public ResponseEntity<Autor> createAutor(@RequestBody Autor autor) {
         Autor _autor = autorRepository.save(
                 new Autor(
@@ -86,7 +72,7 @@ public class AutorController {
         return new ResponseEntity<>(_autor, HttpStatus.CREATED);
     }
 
-    @PutMapping("/autores/{id}")
+    @PutMapping("{id}")
     public ResponseEntity<Autor> updateAutor(@PathVariable Integer id,
                                       @RequestBody  Autor autorRequest) {
         Autor autor = autorRepository.findById(id)
@@ -100,7 +86,21 @@ public class AutorController {
         return new ResponseEntity<>(autorRepository.save(autor), HttpStatus.OK);
     }
 
-    @DeleteMapping("/autores/{id}")
+    @PutMapping("{autorId}/{musicaId}")
+    public ResponseEntity<Autor> addAutor(@PathVariable("musicaId") Integer musicaId,
+                                          @PathVariable("autorId") Integer autorId) {
+        Autor autor = autorRepository.findById(autorId)
+                .orElseThrow(() -> new RecordNotFoundException(autorId));
+
+        Musica musica = musicaRepository.findById(musicaId)
+                .orElseThrow(() -> new RecordNotFoundException(musicaId));
+
+        musica.addAutor(autor);
+
+        return new ResponseEntity<>(autorRepository.save(autor), HttpStatus.OK);
+    }
+
+    @DeleteMapping("{id}")
     public ResponseEntity<HttpStatus> deleteAutor(@PathVariable Integer id){
         autorRepository.deleteById(id);
 

@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@RequestMapping("/musicas")
 public class MusicaController {
 
     private final MusicaRepository musicaRepository;
@@ -27,7 +28,7 @@ public class MusicaController {
         this.autorRepository = autorRepository;
     }
 
-    @GetMapping("/musicas")
+    @GetMapping
     public ResponseEntity<List<Musica>> getAllMusicas() {
         List<Musica> musicas = new ArrayList<>();
         musicaRepository.findAll().forEach(musicas::add);
@@ -39,7 +40,7 @@ public class MusicaController {
         return new ResponseEntity<>(musicas, HttpStatus.OK);
     }
 
-    @GetMapping("/musicas/{id}")
+    @GetMapping("{id}")
     public ResponseEntity<Musica> getMusicaById(@PathVariable("id") Integer id) {
         Musica musica = musicaRepository.findById(id)
                 .orElseThrow(() -> new RecordNotFoundException(id));
@@ -47,7 +48,7 @@ public class MusicaController {
         return new ResponseEntity<>(musica, HttpStatus.OK);
     }
 
-    @GetMapping("/musicas/{categoriaId}/categorias")
+    @GetMapping("{categoriaId}/categorias")
     public ResponseEntity<List<Musica>> getAllMusicasByCategoriaId(
             @PathVariable(value = "categoriaId") Integer categoriaId) {
         if (!categoriaRepository.existsById(categoriaId)) {
@@ -57,7 +58,7 @@ public class MusicaController {
         return new ResponseEntity<>(musicas, HttpStatus.OK);
     }
 
-    @GetMapping("/musicas/{autorId}/autores")
+    @GetMapping("{autorId}/autores")
     public ResponseEntity<List<Musica>> getAllMusicasByAutorId(@PathVariable("autorId") Integer autorId) {
         if (!autorRepository.existsById(autorId)) {
             throw new RecordNotFoundException(autorId);
@@ -67,7 +68,7 @@ public class MusicaController {
         return new ResponseEntity<>(musicas, HttpStatus.OK);
     }
 
-    @PostMapping("/musicas")
+    @PostMapping
     public ResponseEntity<Musica> createMusica(@RequestBody Musica musica) {
         Musica _musica = musicaRepository.save(
                 new Musica(
@@ -84,7 +85,7 @@ public class MusicaController {
         return new ResponseEntity<>(_musica, HttpStatus.CREATED);
     }
 
-    @PostMapping("/musicas/{categoriaId}/categorias")
+    @PostMapping("{categoriaId}/categorias")
     public ResponseEntity<Musica> createMusicaByCategoria(@PathVariable("categoriaId") Integer categoriaId,
                                                @RequestBody Musica musica) {
         Musica _musica = categoriaRepository.findById(categoriaId).map(categoria -> {
@@ -96,7 +97,7 @@ public class MusicaController {
         return new ResponseEntity<>(_musica, HttpStatus.CREATED);
     }
 
-    @PutMapping("/musicas/{id}")
+    @PutMapping("{id}")
     public ResponseEntity<Musica> updateMusica(@PathVariable("id") Integer id,
                                        @RequestBody Musica musica) {
         Musica _musica  = musicaRepository.findById(id)
@@ -112,7 +113,7 @@ public class MusicaController {
         return new ResponseEntity<>(musicaRepository.save(_musica), HttpStatus.OK);
     }
 
-    @DeleteMapping("/musicas/{id}")
+    @DeleteMapping("{id}")
     public ResponseEntity<HttpStatus> deleteMusica(@PathVariable("id") Integer id){
         musicaRepository.deleteById(id);
 
