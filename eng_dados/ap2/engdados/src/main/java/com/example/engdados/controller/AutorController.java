@@ -5,7 +5,6 @@ import com.example.engdados.model.Autor;
 import com.example.engdados.model.Musica;
 import com.example.engdados.repository.AutorRepository;
 import com.example.engdados.repository.MusicaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,8 +16,8 @@ import java.util.List;
 @RequestMapping
 public class AutorController {
 
-    private AutorRepository autorRepository;
-    private MusicaRepository musicaRepository;
+    private final AutorRepository autorRepository;
+    private final MusicaRepository musicaRepository;
 
     public AutorController(AutorRepository autorRepository,
                            MusicaRepository musicaRepository) {
@@ -28,7 +27,7 @@ public class AutorController {
 
     @GetMapping("/autores")
     public ResponseEntity<List<Autor>> getAllAutores() {
-        List<Autor> autores = new ArrayList<Autor>();
+        List<Autor> autores = new ArrayList<>();
         autorRepository.findAll().forEach(autores::add);
 
         if (autores.isEmpty()) {

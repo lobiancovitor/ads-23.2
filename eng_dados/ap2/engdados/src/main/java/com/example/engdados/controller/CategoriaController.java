@@ -3,7 +3,6 @@ package com.example.engdados.controller;
 import com.example.engdados.exception.RecordNotFoundException;
 import com.example.engdados.model.Categoria;
 import com.example.engdados.repository.CategoriaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +14,7 @@ import java.util.List;
 @RequestMapping("/categorias")
 public class CategoriaController {
 
-    private CategoriaRepository categoriaRepository;
+    private final CategoriaRepository categoriaRepository;
 
     public CategoriaController(CategoriaRepository categoriaRepository) {
         this.categoriaRepository = categoriaRepository;
@@ -23,7 +22,7 @@ public class CategoriaController {
 
     @GetMapping
     public ResponseEntity<List<Categoria>> getAllCategorias() {
-        List<Categoria> categorias = new ArrayList<Categoria>();
+        List<Categoria> categorias = new ArrayList<>();
         categoriaRepository.findAll().forEach(categorias::add);
         if (categorias.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);

@@ -5,7 +5,6 @@ import com.example.engdados.model.Musica;
 import com.example.engdados.repository.AutorRepository;
 import com.example.engdados.repository.CategoriaRepository;
 import com.example.engdados.repository.MusicaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,9 +15,9 @@ import java.util.List;
 @RestController
 public class MusicaController {
 
-    private MusicaRepository musicaRepository;
-    private CategoriaRepository categoriaRepository;
-    private AutorRepository autorRepository;
+    private final MusicaRepository musicaRepository;
+    private final CategoriaRepository categoriaRepository;
+    private final AutorRepository autorRepository;
 
     public MusicaController(MusicaRepository musicaRepository,
                             CategoriaRepository categoriaRepository,
@@ -30,7 +29,7 @@ public class MusicaController {
 
     @GetMapping("/musicas")
     public ResponseEntity<List<Musica>> getAllMusicas() {
-        List<Musica> musicas = new ArrayList<Musica>();
+        List<Musica> musicas = new ArrayList<>();
         musicaRepository.findAll().forEach(musicas::add);
 
         if (musicas.isEmpty()) {
