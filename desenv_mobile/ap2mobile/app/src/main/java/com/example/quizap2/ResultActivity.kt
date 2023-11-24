@@ -30,7 +30,7 @@ class ResultActivity : AppCompatActivity() {
         }
 
         btnPokemonWebsite.setOnClickListener {
-            val pokemonWebsiteUrl = "https://www.pokemon.com/br/pokedex/"
+            val pokemonWebsiteUrl = "https://www.pokemon.com/br/pokedex/eevee"
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(pokemonWebsiteUrl))
             startActivity(intent)
         }
